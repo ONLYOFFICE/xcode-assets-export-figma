@@ -1,0 +1,10 @@
+{
+    "name": "Xcode Assets Export",
+    "id": "791183924091295491",
+    "api": "1.0.0",
+    "main": "dist/code.js",
+    "ui": "dist/ui.html",
+    "menu": [
+        { "name": "Export PDF Assets", "command": "export-to-xcode" }
+    ]
+}

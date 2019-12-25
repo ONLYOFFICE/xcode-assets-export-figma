@@ -1,0 +1,26 @@
+{
+    "name": "xcode_assets_export",
+    "version": "1.0.0",
+    "description": "Figma plugin for export Xcode assets.",
+    "main": "index.js",
+    "scripts": {
+        "watch": "npx webpack --mode=development --watch",
+        "publish": "npx webpack --mode=production"
+    },
+    "author": "Alexander Yuzhin",
+    "license": "MIT",
+    "dependencies": {
+        "jszip": "^3.2.2"
+    },
+    "devDependencies": {
+        "raw-loader": "^0.5.1",
+        "css-loader": "^3.2.0",
+        "html-webpack-inline-source-plugin": "0.0.10",
+        "html-webpack-plugin": "^3.2.0",
+        "style-loader": "^1.0.0",
+        "ts-loader": "^6.0.4",
+        "typescript": "^3.6.2",
+        "webpack": "^4.39.3",
+        "webpack-cli": "^3.3.6"
+    }
+}

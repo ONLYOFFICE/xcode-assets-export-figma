@@ -1,0 +1,199 @@
+* {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+
+/*  Typography */
+
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    src: url("https://rsms.me/inter/font-files/Inter-Regular.woff2?v=3.7") format("woff2"), url("https://rsms.me/inter/font-files/Inter-Regular.woff?v=3.7") format("woff");
+}
+
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 500;
+    src: url("https://rsms.me/inter/font-files/Inter-Medium.woff2?v=3.7") format("woff2"), url("https://rsms.me/inter/font-files/Inter-Medium.woff2?v=3.7") format("woff");
+}
+
+body {
+    margin: 0;
+}
+
+a:link,
+a:visited {
+    text-decoration: none;
+}
+
+#app {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+#content {
+    display: flex;
+    flex: auto;
+    overflow: auto;
+    padding: 12px;
+    flex-wrap: wrap;
+    align-content: flex-start;
+}
+
+#footer {
+    height: 48px;
+    padding: 8px;
+    border-top: 1px solid #e5e5e5;
+    box-sizing: border-box;
+    text-align: right;
+}
+
+.button {
+    display: inline-block;
+    -ms-flex-negative: 0;
+    flex-shrink: 0;
+    margin: 1px 0 1px 0;
+    padding: 5px 16px 5px 16px;
+    border: 2px solid transparent;
+    border-radius: 6px;
+    outline: none;
+}
+
+.button--primary {
+    color: #ffffff;
+    background-color: #18a0fb;
+    font-family: "Inter", sans-serif;
+    font-weight: 500;
+    font-size: 11px;
+    line-height: 16px;
+    letter-spacing: 0.01em;
+}
+
+.button--primary:active,
+.button--primary:focus {
+    border: 2px solid rgba(0, 0, 0, 0.3);
+}
+
+.button--primary:disabled {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.button--primary-destructive {
+    color: #ffffff;
+    background-color: #f24822;
+}
+
+.button--primary-destructive:active,
+.button--primary-destructive:focus {
+    border: 2px solid rgba(0, 0, 0, 0.3);
+}
+
+.button--primary-destructive:disabled {
+    opacity: .4;
+}
+
+.button--secondary {
+    color: rgba(0, 0, 0, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.8);
+    background-color: #ffffff;
+    font-family: "Inter", sans-serif;
+    font-weight: 500;
+    font-size: 11px;
+    line-height: 16px;
+    letter-spacing: 0.005em;
+}
+
+.button--secondary:active,
+.button--secondary:focus {
+    padding: 4px 15px 4px 15px;
+    border: 2px solid #18a0fb;
+}
+
+.button--secondary:disabled {
+    color: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+.button--secondary-destructive {
+    color: #f24822;
+    border: 1px solid #f24822;
+    background-color: #ffffff;
+    font-family: "Inter", sans-serif;
+    font-weight: 500;
+    font-size: 11px;
+    line-height: 16px;
+    letter-spacing: 0.005em;
+}
+
+.button--secondary-destructive:active,
+.button--secondary-destructive:focus {
+    padding: 4px 15px 4px 15px;
+    border: 2px solid #f24822;
+}
+
+.button--secondary-destructive:disabled {
+    opacity: .4;
+}
+
+.onboarding-tip {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: top;
+    -ms-flex-align: top;
+    align-items: top;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    padding: 0 16px 0 0;
+}
+
+.onboarding-tip__icon {
+    width: 32px;
+    height: 32px;
+    margin-right: 8px;
+}
+
+.onboarding-tip__msg {
+    padding: 8px 0 8px 0;
+    color: rgba(0, 0, 0, 0.8);
+    font-family: "Inter", sans-serif;
+    font-weight: 400;
+    font-size: 11px;
+    line-height: 16px;
+    letter-spacing: 0.005em;
+}
+
+.onboarding-tip__msg a:link,
+.onboarding-tip__msg a:hover,
+.onboarding-tip__msg a:active,
+.onboarding-tip__msg a:visited {
+    text-decoration: none;
+    color: #18a0fb;
+}
+
+.onboarding-tip--hidden {
+    display: none;
+}
+
+.onboarding-tip--light {
+    color: rgba(0, 0, 0, 0.3);
+}
+
+.onboarding-tip--pt5 {
+    padding-top: 8px;
+}
+
+.icon {
+    width: 32px;
+    height: 32px;
+    cursor: default;
+    color: #000000;
+    background-repeat: no-repeat;
+    background-position: 0 0;
+}
