@@ -10,7 +10,7 @@
     "author": "Alexander Yuzhin",
     "license": "MIT",
     "dependencies": {
-        "jszip": "^3.2.2"
+        "jszip": "^3.7.0"
     },
     "devDependencies": {
         "raw-loader": "^0.5.1",
