@@ -19,6 +19,27 @@ window.onmessage = async (event) => {
         showDownloadButton(assets, output);
     }
 
+    // Export Colors
+    if (pluginMessage.type === 'export-colors') {
+        const output = pluginMessage.outputName
+        const assets = []
+            .concat(getContentsInfoFromPluginMessage(pluginMessage))
+
+        showMessage('Successfully completed. Click Save to get the result.')
+        showDownloadButton(assets, output);
+    }
+
+    // Export Icons
+    if (pluginMessage.type === 'export-assets-2') {
+        const output = pluginMessage.outputName
+        const assets = []
+            .concat(getContentsInfoFromPluginMessage(pluginMessage))
+            .concat(getPDFAssetsFromPluginMessage(pluginMessage))
+
+        showMessage('Successfully completed. Click Save to get the result.')
+        showDownloadButton(assets, output);
+    }
+
     // Display message
     if (pluginMessage.type === 'show-error') {
         showMessage(pluginMessage.message)

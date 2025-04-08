@@ -6,6 +6,9 @@
     "ui": "dist/ui.html",
     "editorType": ["figma"],
     "menu": [
-        { "name": "Export PDF Assets", "command": "export-to-xcode" }
+        { "name": "Export Icons Assets", "command": "export-icons-to-xcode" },
+        { "name": "Export Colors Assets", "command": "export-colors-to-xcode" },
+        {"separator": true},
+        { "name": "Export PDF Assets (Legacy)", "command": "export-to-xcode" }
     ]
 }

@@ -1,25 +1,25 @@
 {
-    "images" : [
-        {
-            "idiom" : "universal",
-            "filename" : "{0}"
-        },
-        {
-            "idiom" : "universal",
-            "filename" : "{1}",
-            "appearances" : [
-                {
-                    "appearance" : "luminosity",
-                    "value" : "dark"
-                }
-            ]
-        }
-    ],
-    "info" : {
-        "version" : 1,
-        "author" : "xcode"
+  "images" : [
+    {
+      "idiom" : "universal",
+      "filename" : "{0}"
     },
-    "properties" : {
-        "preserves-vector-representation" : true
+    {
+      "idiom" : "universal",
+      "filename" : "{1}",
+      "appearances" : [
+        {
+           "appearance" : "luminosity",
+           "value" : "dark"
+        }
+      ]
     }
+  ],
+  "info" : {
+    "version" : 1,
+    "author" : "xcode"
+  },
+  "properties" : {
+    "preserves-vector-representation" : true
+  }
 }
