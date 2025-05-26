@@ -1,3 +1,5 @@
+import { formatJsonWithSpaceBeforeColon } from './utils';
+
 export async function exportIconsAssets() {
   const iconsFrame = figma.currentPage.findOne(n => n.type === 'FRAME' && n.name.includes('Icons')) as FrameNode;
   let assets: any[] = [];
@@ -89,7 +91,7 @@ export async function exportIconsAssets() {
       // Create list of Contents files
       contents.push({
         path: `${iconSetPath}/Contents.json`,
-        data: JSON.stringify(contentsJSON, null, 2)
+        data: formatJsonWithSpaceBeforeColon(contentsJSON)
       })
     }
 
