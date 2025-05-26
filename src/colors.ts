@@ -1,3 +1,5 @@
+import { formatJsonWithSpaceBeforeColon } from './utils';
+
 export function exportColorAssets() {
     const nodes = figma.currentPage.findAll(node => node.name === 'color-preview');
     let contents = [];
@@ -19,7 +21,6 @@ export function exportColorAssets() {
                     colors: [
                         {
                         idiom: "universal",
-                        appearances: [{ appearance: "luminosity", value: "light" }],
                         color: figmaRGBToXcodeColor(lightColor)
                         },
                         {
@@ -32,7 +33,7 @@ export function exportColorAssets() {
 
                     contents.push({
                         path: `${figma.currentPage.name}/Colors/${colorName}.colorset/Contents.json`,
-                        data: JSON.stringify(contentsJSON, null, 2)
+                        data: formatJsonWithSpaceBeforeColon(contentsJSON)
                     })
                 }
             }
@@ -68,12 +69,23 @@ export function exportColorAssets() {
   }
   
   function figmaRGBToXcodeColor(color: { r: number, g: number, b: number, a: number }) {
+    // Convert floating point RGB (0-1) to integer (0-255)
+    const r = Math.round(color.r * 255);
+    const g = Math.round(color.g * 255);
+    const b = Math.round(color.b * 255);
+    
+    // Convert to hex with leading zero if needed (uppercase)
+    const toHex = (value: number): string => {
+      const hex = value.toString(16).toUpperCase();
+      return "0x" + (hex.length === 1 ? "0" + hex : hex);
+    };
+    
     return {
       "color-space": "srgb",
       components: {
-        red: color.r.toFixed(3),
-        green: color.g.toFixed(3),
-        blue: color.b.toFixed(3),
+        red: toHex(r),
+        green: toHex(g),
+        blue: toHex(b),
         alpha: color.a.toFixed(3)
       }
     };
