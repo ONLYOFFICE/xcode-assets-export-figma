@@ -1,5 +1,23 @@
 import { formatJsonWithSpaceBeforeColon } from './utils';
 
+function buildFolderPath(node: SceneNode): string {
+    const folderParts: string[] = [];
+    let currentNode = node.parent;
+    
+    // Traverse up the hierarchy to find 📁 tagged nodes
+    while (currentNode && currentNode.type !== 'PAGE') {
+        if (currentNode.name.includes('📁')) {
+            const folderName = currentNode.name.replace('📁', '').trim();
+            if (folderName) {
+                folderParts.unshift(folderName);
+            }
+        }
+        currentNode = currentNode.parent;
+    }
+    
+    return folderParts.length > 0 ? folderParts.join('/') + '/' : '';
+}
+
 export async function exportIconsAssets() {
   const iconsFrame = figma.currentPage.findOne(n => n.type === 'FRAME' && n.name.includes('Icons')) as FrameNode;
   let assets: any[] = [];
@@ -15,7 +33,8 @@ export async function exportIconsAssets() {
       if (!nameNode || !groupNode) continue;
 
       const iconName = nameNode.characters.trim();
-      const iconSetPath = `${figma.currentPage.name}/Icons/${iconName}.imageset`;
+      const folderPath = buildFolderPath(icon);
+      const iconSetPath = `${figma.currentPage.name}/Icons/${folderPath}${iconName}.imageset`;
       const images: any[] = [];
 
       // Export PDF with advanced configuration

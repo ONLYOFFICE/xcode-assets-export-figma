@@ -1,5 +1,23 @@
 import { formatJsonWithSpaceBeforeColon } from './utils';
 
+function buildFolderPath(node: SceneNode): string {
+    const folderParts: string[] = [];
+    let currentNode = node.parent;
+    
+    // Traverse up the hierarchy to find 📁 tagged nodes
+    while (currentNode && currentNode.type !== 'PAGE') {
+        if (currentNode.name.includes('📁')) {
+            const folderName = currentNode.name.replace('📁', '').trim();
+            if (folderName) {
+                folderParts.unshift(folderName);
+            }
+        }
+        currentNode = currentNode.parent;
+    }
+    
+    return folderParts.length > 0 ? folderParts.join('/') + '/' : '';
+}
+
 export function exportColorAssets() {
     const nodes = figma.currentPage.findAll(node => node.name === 'color-preview');
     let contents = [];
@@ -16,6 +34,7 @@ export function exportColorAssets() {
                 const darkColor = getSolidFill(darkNode);
 
                 if (lightColor && darkColor) {
+                    const folderPath = buildFolderPath(node);
                     const contentsJSON = {
                     info: { version: 1, author: "xcode" },
                     colors: [
@@ -32,7 +51,7 @@ export function exportColorAssets() {
                     };
 
                     contents.push({
-                        path: `${figma.currentPage.name}/Colors/${colorName}.colorset/Contents.json`,
+                        path: `${figma.currentPage.name}/Colors/${folderPath}${colorName}.colorset/Contents.json`,
                         data: formatJsonWithSpaceBeforeColon(contentsJSON)
                     })
                 }
