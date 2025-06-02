@@ -1,5 +1,5 @@
 import contentsJsonTemplate from 'raw-loader!./contents.template';
-import { exportColorAssetsForXcode } from './colors';
+import { exportColorAssetsForXcode, exportColorsAssetsForAndroid } from './colors';
 import { exportIconsAssetsForXcode, exportIconsAssetsForAndroid } from './icons'; 
 
 let command = figma.command;
@@ -71,6 +71,8 @@ if (command === 'export-to-xcode') {
   }
 } else if (command === 'export-colors-to-xcode') {
   exportColorAssetsForXcode();
+} else if (command === 'export-colors-to-android') {
+  exportColorsAssetsForAndroid();
 } else if (command === 'export-icons-to-xcode') {
   (async function() {
     await exportIconsAssetsForXcode();

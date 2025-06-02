@@ -91,12 +91,25 @@ export async function exportIconsAssetsForXcode() {
         await exportPDF('$rtl-dark');
       }
 
-      // RU
-      if (groupNode.findOne(n => n.name === '$ru-light')) {
-        await exportPDF('$ru-light', 'ru');
-      }
-      if (groupNode.findOne(n => n.name === '$ru-dark')) {
-        await exportPDF('$ru-dark', 'ru');
+      // Process all localized icons
+      // Find all nodes with names like $XX-light or $XX-dark where XX is the locale code
+      for (const child of groupNode.children) {
+        if (!child.name.startsWith('$') || 
+            child.name === '$light' || child.name === '$dark' || 
+            child.name === '$rtl-light' || child.name === '$rtl-dark') continue;
+        
+        // Extract locale from node name (between $ and -)
+        const parts = child.name.split('-');
+        // Make sure it's a valid locale node format ($locale-theme)
+        if (parts.length !== 2) continue;
+        
+        const locale = parts[0].replace('$', '');
+        
+        // Skip RTL special case since it's handled separately
+        if (locale === 'rtl') continue;
+        
+        // Export localized version with extracted locale
+        await exportPDF(child.name, locale);
       }
 
       const contentsJSON = {
@@ -197,15 +210,29 @@ export async function exportIconsAssetsForAndroid() {
       if (groupNode.findOne(n => n.name === '$rtl-dark')) {
         await exportSVG('$rtl-dark', { night: true, rtl: true });
       }
-
-      // RU light (drawable-ru)
-      if (groupNode.findOne(n => n.name === '$ru-light')) {
-        await exportSVG('$ru-light', { locale: 'ru' });
-      }
       
-      // RU dark (drawable-ru-night)
-      if (groupNode.findOne(n => n.name === '$ru-dark')) {
-        await exportSVG('$ru-dark', { locale: 'ru', night: true });
+      // Process all localized icons
+      // Find all nodes whose names start with $ but aren't 'light', 'dark', 'rtl-light', or 'rtl-dark'
+      for (const child of groupNode.children) {
+        if (!child.name.startsWith('$')) continue;
+        
+        // Skip non-localized variants
+        if (child.name === '$light' || child.name === '$dark' || 
+            child.name === '$rtl-light' || child.name === '$rtl-dark') continue;
+        
+        // Extract locale from node name (between $ and -)
+        const parts = child.name.split('-');
+        // Make sure it's a valid locale node format ($locale-theme)
+        if (parts.length !== 2) continue;
+        
+        const locale = parts[0].replace('$', '');
+        const isDark = parts[1] === 'dark';
+        
+        // Export localized version
+        await exportSVG(child.name, { 
+          locale: locale, 
+          night: isDark
+        });
       }
     }
 

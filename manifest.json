@@ -1,5 +1,5 @@
 {
-    "name": "Xcode Assets Export",
+    "name": "Mobile Assets Export",
     "id": "791183924091295491",
     "api": "1.0.0",
     "main": "dist/code.js",
@@ -10,7 +10,8 @@
         { "name": "Export Colors Assets for Xcode", "command": "export-colors-to-xcode" },
         {"separator": true},
         { "name": "Export Icons Assets for Android Studio", "command": "export-icons-to-android" },
+        { "name": "Export Colors Assets for Android Studio", "command": "export-colors-to-android" },
         {"separator": true},
-        { "name": "Export PDF Assets (Legacy)", "command": "export-to-xcode" }
+        { "name": "Export PDF Assets for Xcode (Legacy)", "command": "export-to-xcode" }
     ]
 }

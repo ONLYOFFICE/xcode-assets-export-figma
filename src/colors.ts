@@ -1,5 +1,28 @@
 import { formatJsonWithSpaceBeforeColon } from './utils';
 
+/**
+ * Converts Figma RGBA color to HEX format for Android
+ */
+function figmaRGBToAndroidColor(color: { r: number, g: number, b: number, a: number }): string {
+  // Convert RGBA (0-1) to HEX components
+  const r = Math.round(color.r * 255);
+  const g = Math.round(color.g * 255);
+  const b = Math.round(color.b * 255);
+  const a = Math.round(color.a * 255);
+  
+  // Convert to HEX format #AARRGGBB or #RRGGBB if alpha = 255
+  const toHex = (value: number): string => {
+    const hex = value.toString(16).toUpperCase();
+    return hex.length === 1 ? "0" + hex : hex;
+  };
+  
+  if (a < 255) {
+    return `#${toHex(a)}${toHex(r)}${toHex(g)}${toHex(b)}`;
+  } else {
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+  }
+}
+
 function buildFolderPath(node: SceneNode): string {
     const folderParts: string[] = [];
     let currentNode = node.parent;
@@ -16,6 +39,69 @@ function buildFolderPath(node: SceneNode): string {
     }
     
     return folderParts.length > 0 ? folderParts.join('/') + '/' : '';
+}
+
+export function exportColorsAssetsForAndroid() {
+    const nodes = figma.currentPage.findAll(node => node.name === 'color-preview');
+    
+    // Prepare containers for XML files
+    let lightColorLines: string[] = [];
+    let darkColorLines: string[] = [];
+
+    for (const node of nodes) {
+        if ('children' in node) {
+            const titleNode = node.findOne(n => n.name === '$title' && 'characters' in n) as TextNode;
+            const lightNode = node.findOne(n => n.name === 'light' && 'fills' in n) as FrameNode;
+            const darkNode = node.findOne(n => n.name === 'dark' && 'fills' in n) as FrameNode;
+
+            if (titleNode && lightNode && darkNode) {
+                const colorName = titleNode.characters.trim();
+                const lightColor = getSolidFill(lightNode);
+                const darkColor = getSolidFill(darkNode);
+
+                if (lightColor && darkColor) {
+                    // Convert to HEX format for Android
+                    const lightHexColor = figmaRGBToAndroidColor(lightColor);
+                    const darkHexColor = figmaRGBToAndroidColor(darkColor);
+
+                    // Add lines for light and dark themes
+                    lightColorLines.push(`    <color name="${colorName}">${lightHexColor}</color>`);
+                    darkColorLines.push(`    <color name="${colorName}">${darkHexColor}</color>`);
+                }
+            }
+        }
+    }
+
+    // Generate XML files
+    const lightColorsXml = `<?xml version="1.0" encoding="utf-8"?>
+<resources>
+${lightColorLines.join('\n')}
+</resources>`;
+
+    const darkColorsXml = `<?xml version="1.0" encoding="utf-8"?>
+<resources>
+${darkColorLines.join('\n')}
+</resources>`;
+
+    // Create archive content
+    const contents = [
+        {
+            path: `${figma.currentPage.name}/res/values/colors.xml`,
+            data: lightColorsXml
+        },
+        {
+            path: `${figma.currentPage.name}/res/values-night/colors.xml`,
+            data: darkColorsXml
+        }
+    ];
+
+    // Send data to UI
+    figma.showUI(__html__, { width: 256, height: 140 });
+    figma.ui.postMessage({ 
+        type: 'export-colors', 
+        outputName: figma.currentPage.name,
+        exportContents: contents
+    });
 }
 
 export function exportColorAssetsForXcode() {
