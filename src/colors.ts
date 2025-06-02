@@ -47,6 +47,10 @@ export function exportColorsAssetsForAndroid() {
     // Prepare containers for XML files
     let lightColorLines: string[] = [];
     let darkColorLines: string[] = [];
+    
+    // For checking color name duplicates
+    const colorNames = new Set<string>();
+    const duplicateColors: string[] = [];
 
     for (const node of nodes) {
         if ('children' in node) {
@@ -58,6 +62,13 @@ export function exportColorsAssetsForAndroid() {
                 const colorName = titleNode.characters.trim();
                 const lightColor = getSolidFill(lightNode);
                 const darkColor = getSolidFill(darkNode);
+
+                // Check for duplicate color names
+                if (colorNames.has(colorName)) {
+                    duplicateColors.push(colorName);
+                } else {
+                    colorNames.add(colorName);
+                }
 
                 if (lightColor && darkColor) {
                     // Convert to HEX format for Android
@@ -95,6 +106,12 @@ ${darkColorLines.join('\n')}
         }
     ];
 
+    // Check for duplicates and display error if found
+    if (duplicateColors.length > 0) {
+        figma.closePlugin(`Error: Duplicate color names detected: ${duplicateColors.join(', ')}`);
+        return;
+    }
+
     // Send data to UI
     figma.showUI(__html__, { width: 256, height: 140 });
     figma.ui.postMessage({ 
@@ -107,6 +124,10 @@ ${darkColorLines.join('\n')}
 export function exportColorAssetsForXcode() {
     const nodes = figma.currentPage.findAll(node => node.name === 'color-preview');
     let contents = [];
+    
+    // For checking color name duplicates
+    const colorNames = new Set<string>();
+    const duplicateColors: string[] = [];
 
     for (const node of nodes) {
         if ('children' in node) {
@@ -118,6 +139,13 @@ export function exportColorAssetsForXcode() {
                 const colorName = titleNode.characters.trim();
                 const lightColor = getSolidFill(lightNode);
                 const darkColor = getSolidFill(darkNode);
+
+                // Check for duplicate color names
+                if (colorNames.has(colorName)) {
+                    duplicateColors.push(colorName);
+                } else {
+                    colorNames.add(colorName);
+                }
 
                 if (lightColor && darkColor) {
                     const folderPath = buildFolderPath(node);
@@ -143,6 +171,12 @@ export function exportColorAssetsForXcode() {
                 }
             }
 
+            // Check for duplicates and display error if found
+            if (duplicateColors.length > 0) {
+                figma.closePlugin(`Error: Duplicate color names detected: ${duplicateColors.join(', ')}`);
+                return;
+            }
+            
             figma.showUI(__html__, { width: 256, height: 140 })
             figma.ui.postMessage({ 
                 type: 'export-colors', 

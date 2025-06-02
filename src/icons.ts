@@ -22,6 +22,10 @@ export async function exportIconsAssetsForXcode() {
   const iconsFrame = figma.currentPage.findOne(n => n.type === 'FRAME' && n.name.includes('Icons')) as FrameNode;
   let assets: any[] = [];
   let contents: any[] = [];
+  
+  // For checking icon name duplicates
+  const iconNames = new Set<string>();
+  const duplicateIcons: string[] = [];
 
   if (iconsFrame) {
     const iconNodes = iconsFrame.findAll(n => n.name === 'icon' && n.type === 'INSTANCE') as InstanceNode[];
@@ -33,6 +37,13 @@ export async function exportIconsAssetsForXcode() {
       if (!nameNode || !groupNode) continue;
 
       const iconName = nameNode.characters.trim();
+      
+      // Check for duplicate icon names
+      if (iconNames.has(iconName)) {
+        duplicateIcons.push(iconName);
+      } else {
+        iconNames.add(iconName);
+      }
       const folderPath = buildFolderPath(icon);
       const iconSetPath = `${figma.currentPage.name}/Icons/${folderPath}${iconName}.imageset`;
       const images: any[] = [];
@@ -127,6 +138,12 @@ export async function exportIconsAssetsForXcode() {
       })
     }
 
+    // Check for duplicates and display error if found
+    if (duplicateIcons.length > 0) {
+      figma.closePlugin(`Error: Duplicate icon names detected: ${duplicateIcons.join(', ')}`);
+      return;
+    }
+
     Promise.all(assets.map(asset => getExportImagesFromLayer(asset)))
     .then(exportAssets => {
       figma.showUI(__html__, { width: 256, height: 140 })
@@ -149,6 +166,10 @@ export async function exportIconsAssetsForAndroid() {
   const iconsFrame = figma.currentPage.findOne(n => n.type === 'FRAME' && n.name.includes('Icons')) as FrameNode;
   let assets: any[] = [];
   let contents: any[] = [];
+  
+  // For checking icon name duplicates
+  const iconNames = new Set<string>();
+  const duplicateIcons: string[] = [];
 
   if (iconsFrame) {
     const iconNodes = iconsFrame.findAll(n => n.name === 'icon' && n.type === 'INSTANCE') as InstanceNode[];
@@ -160,6 +181,13 @@ export async function exportIconsAssetsForAndroid() {
       if (!nameNode || !groupNode) continue;
 
       const iconName = nameNode.characters.trim().toLowerCase();
+      
+      // Check for duplicate icon names
+      if (iconNames.has(iconName)) {
+        duplicateIcons.push(iconName);
+      } else {
+        iconNames.add(iconName);
+      }
       
       // Export in SVG format for subsequent conversion to VectorDrawable
       async function exportSVG(nodeName: string, options: { 
@@ -234,6 +262,12 @@ export async function exportIconsAssetsForAndroid() {
           night: isDark
         });
       }
+    }
+
+    // Check for duplicates and display error if found
+    if (duplicateIcons.length > 0) {
+      figma.closePlugin(`Error: Duplicate icon names detected: ${duplicateIcons.join(', ')}`);
+      return;
     }
 
     Promise.all(assets.map(asset => getExportSVGFromLayer(asset)))
