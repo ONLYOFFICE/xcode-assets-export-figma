@@ -6,8 +6,10 @@
     "ui": "dist/ui.html",
     "editorType": ["figma"],
     "menu": [
-        { "name": "Export Icons Assets", "command": "export-icons-to-xcode" },
-        { "name": "Export Colors Assets", "command": "export-colors-to-xcode" },
+        { "name": "Export Icons Assets for Xcode", "command": "export-icons-to-xcode" },
+        { "name": "Export Colors Assets for Xcode", "command": "export-colors-to-xcode" },
+        {"separator": true},
+        { "name": "Export Icons Assets for Android Studio", "command": "export-icons-to-android" },
         {"separator": true},
         { "name": "Export PDF Assets (Legacy)", "command": "export-to-xcode" }
     ]

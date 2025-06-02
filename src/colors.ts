@@ -18,7 +18,7 @@ function buildFolderPath(node: SceneNode): string {
     return folderParts.length > 0 ? folderParts.join('/') + '/' : '';
 }
 
-export function exportColorAssets() {
+export function exportColorAssetsForXcode() {
     const nodes = figma.currentPage.findAll(node => node.name === 'color-preview');
     let contents = [];
 
