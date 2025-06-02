@@ -1,6 +1,6 @@
 import contentsJsonTemplate from 'raw-loader!./contents.template';
-import { exportColorAssets } from './colors';
-import { exportIconsAssets } from './icons'; 
+import { exportColorAssetsForXcode, exportColorsAssetsForAndroid } from './colors';
+import { exportIconsAssetsForXcode, exportIconsAssetsForAndroid } from './icons'; 
 
 let command = figma.command;
 let currentPage = figma.currentPage;
@@ -70,10 +70,16 @@ if (command === 'export-to-xcode') {
     });
   }
 } else if (command === 'export-colors-to-xcode') {
-  exportColorAssets();
+  exportColorAssetsForXcode();
+} else if (command === 'export-colors-to-android') {
+  exportColorsAssetsForAndroid();
 } else if (command === 'export-icons-to-xcode') {
   (async function() {
-    await exportIconsAssets();
+    await exportIconsAssetsForXcode();
+  })();
+} else if (command === 'export-icons-to-android') {
+  (async function() {
+    await exportIconsAssetsForAndroid();
   })();
 }
 

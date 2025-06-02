@@ -39,6 +39,14 @@ window.onmessage = async (event) => {
         showMessage('Successfully completed. Click Save to get the result.')
         showDownloadButton(assets, output);
     }
+    
+    // Export Android Icons
+    if (pluginMessage.type === 'export-assets-android') {
+        const output = pluginMessage.outputName
+        const androidAssets = getAndroidAssetsFromPluginMessage(pluginMessage);
+        showMessage('Successfully completed. Click Save to get the result.')
+        showDownloadButton(androidAssets, output);
+    }
 
     // Display message
     if (pluginMessage.type === 'show-error') {
@@ -70,12 +78,32 @@ function getPDFAssetsFromPluginMessage(pluginMessage: any): any[] {
     return assets;
 }
 
+function getAndroidAssetsFromPluginMessage(pluginMessage: any): any[] {
+    let assets: any[] = [];
+    for (const exportAsset of pluginMessage.exportAssets) {
+        for (const item of exportAsset) {
+            if (item.text) {
+                assets.push({
+                    path: item.path,
+                    text: item.text
+                });
+            } else if (item.data) {
+                assets.push({
+                    path: item.path,
+                    blob: item.data
+                });
+            }
+        }
+    }
+    return assets;
+}
+
 /**
  * @param  {any[]} assets [{path: string, blob: Blob, text: string}]
  * @param  {string} name
  * @returns Promise
  */
-function showDownloadButton(assets: any[], name: string): Promise<null> {
+function showDownloadButton(assets: any[], name: string): Promise<void> {
     return new Promise((resolve, reject) => {
         let zip = new JSZip();
         for (let file of assets) {
