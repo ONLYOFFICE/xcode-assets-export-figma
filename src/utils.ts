@@ -11,14 +11,50 @@ export function formatJsonWithSpaceBeforeColon(obj: any): string {
   return jsonString.replace(/"([^"]+)":/g, '"$1" :');
 }
 
+// CSS color names to hex mapping
+const colorNameToHex: Record<string, string> = {
+  black: "#000000",
+  white: "#FFFFFF",
+  red: "#FF0000",
+  green: "#008000",
+  blue: "#0000FF",
+  yellow: "#FFFF00",
+  cyan: "#00FFFF",
+  magenta: "#FF00FF",
+  orange: "#FFA500",
+  purple: "#800080",
+  pink: "#FFC0CB",
+  gray: "#808080",
+  grey: "#808080",
+  silver: "#C0C0C0",
+  maroon: "#800000",
+  olive: "#808000",
+  lime: "#00FF00",
+  aqua: "#00FFFF",
+  teal: "#008080",
+  navy: "#000080",
+  fuchsia: "#FF00FF",
+  transparent: "#00000000"
+};
+
+/**
+ * Converts color name to hex if needed
+ * @param color Color string (name or hex)
+ * @returns Hex color string
+ */
+function normalizeColor(color: string): string {
+  const lowerColor = color.toLowerCase();
+  return colorNameToHex[lowerColor] || color;
+}
+
 /**
  * Converts SVG string to VectorDrawable format for Android
  * @param svgString SVG string
  * @param options Additional parameters (width, height, rtl)
  * @returns XML string in VectorDrawable format
  */
-export function svgToVectorDrawable(svgString: string, options: { 
-  width: number, 
+export function svgToVectorDrawable(svgString: string, options: {
+  width: number,
   height: number,
   isRTL?: boolean
 }): string {
@@ -43,10 +79,10 @@ export function svgToVectorDrawable(svgString: string, options: {
     
     // Extract attributes for this path
     const fillMatch = fullPathElement.match(/fill=["']([^"']*)["']/);
-    const fill = fillMatch ? fillMatch[1] : "#000000";
-    
+    const fill = fillMatch ? normalizeColor(fillMatch[1]) : "#000000";
+
     const strokeMatch = fullPathElement.match(/stroke=["']([^"']*)["']/);
-    const stroke = strokeMatch ? strokeMatch[1] : null;
+    const stroke = strokeMatch ? normalizeColor(strokeMatch[1]) : null;
     
     const strokeWidthMatch = fullPathElement.match(/stroke-width=["']([^"']*)["']/);
     const strokeWidth = strokeWidthMatch ? strokeWidthMatch[1] : null;

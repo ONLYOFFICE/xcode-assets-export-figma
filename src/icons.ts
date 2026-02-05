@@ -190,22 +190,27 @@ export async function exportIconsAssetsForAndroid() {
       }
       
       // Export in SVG format for subsequent conversion to VectorDrawable
-      async function exportSVG(nodeName: string, options: { 
-        night?: boolean, 
-        locale?: string, 
-        rtl?: boolean 
+      async function exportSVG(nodeName: string, options: {
+        night?: boolean,
+        locale?: string,
+        rtl?: boolean
       } = {}) {
         const node = groupNode.findOne(n => n.name === nodeName && n.visible !== false);
         if (!node) return;
 
         // Determine the correct folder based on theme and localization
         let folderName = 'drawable';
-        
+
+        // Add RTL layout direction qualifier
+        if (options.rtl) {
+          folderName += `-ldrtl`;
+        }
+
         // Add localization
         if (options.locale) {
           folderName += `-${options.locale}`;
         }
-        
+
         // Add night theme
         if (options.night) {
           folderName += `-night`;
