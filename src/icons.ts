@@ -19,16 +19,25 @@ function buildFolderPath(node: SceneNode): string {
 }
 
 export async function exportIconsAssetsForXcode() {
-  const iconsFrame = figma.currentPage.findOne(n => n.type === 'FRAME' && n.name.includes('Icons')) as FrameNode;
   let assets: any[] = [];
   let contents: any[] = [];
-  
+
   // For checking icon name duplicates
   const iconNames = new Set<string>();
   const duplicateIcons: string[] = [];
 
-  if (iconsFrame) {
-    const iconNodes = iconsFrame.findAll(n => n.name === 'icon' && n.type === 'INSTANCE') as InstanceNode[];
+  // Use selected icon nodes if any, otherwise fall back to scanning the Icons frame
+  const selectedIcons = figma.currentPage.selection.filter(n => n.name === 'icon' && n.type === 'INSTANCE') as InstanceNode[];
+  let iconNodes: InstanceNode[];
+  if (selectedIcons.length > 0) {
+    iconNodes = selectedIcons;
+  } else {
+    const iconsFrame = figma.currentPage.findOne(n => n.type === 'FRAME' && n.name.includes('Icons')) as FrameNode;
+    if (!iconsFrame) return;
+    iconNodes = iconsFrame.findAll(n => n.name === 'icon' && n.type === 'INSTANCE') as InstanceNode[];
+  }
+
+  if (iconNodes.length > 0) {
 
     for (const icon of iconNodes) {
       const nameNode = icon.findOne(n => n.name === '$icon-name' && 'characters' in n) as TextNode;
@@ -163,16 +172,25 @@ export async function exportIconsAssetsForXcode() {
 }
 
 export async function exportIconsAssetsForAndroid() {
-  const iconsFrame = figma.currentPage.findOne(n => n.type === 'FRAME' && n.name.includes('Icons')) as FrameNode;
   let assets: any[] = [];
   let contents: any[] = [];
-  
+
   // For checking icon name duplicates
   const iconNames = new Set<string>();
   const duplicateIcons: string[] = [];
 
-  if (iconsFrame) {
-    const iconNodes = iconsFrame.findAll(n => n.name === 'icon' && n.type === 'INSTANCE') as InstanceNode[];
+  // Use selected icon nodes if any, otherwise fall back to scanning the Icons frame
+  const selectedIcons = figma.currentPage.selection.filter(n => n.name === 'icon' && n.type === 'INSTANCE') as InstanceNode[];
+  let iconNodes: InstanceNode[];
+  if (selectedIcons.length > 0) {
+    iconNodes = selectedIcons;
+  } else {
+    const iconsFrame = figma.currentPage.findOne(n => n.type === 'FRAME' && n.name.includes('Icons')) as FrameNode;
+    if (!iconsFrame) return;
+    iconNodes = iconsFrame.findAll(n => n.name === 'icon' && n.type === 'INSTANCE') as InstanceNode[];
+  }
+
+  if (iconNodes.length > 0) {
 
     for (const icon of iconNodes) {
       const nameNode = icon.findOne(n => n.name === '$icon-name' && 'characters' in n) as TextNode;

@@ -333,7 +333,7 @@ export function svgToVectorDrawable(svgString: string, options: {
     android:width="${options.width}dp"
     android:height="${options.height}dp"
     android:viewportWidth="${width}"
-    android:viewportHeight="${height}"${options.isRTL ? '\n    android:autoMirrored="true"' : ''}>
+    android:viewportHeight="${height}">
 `;
 
   // Add paths

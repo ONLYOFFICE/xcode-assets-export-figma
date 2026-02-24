@@ -40,6 +40,7 @@ Exports icons in PDF format with support for:
 - Light and dark modes
 - Language direction (RTL - right to left)
 - Localization for different languages (e.g., Russian)
+- **Partial export:** select one or more `icon` nodes on the page before running the export to export only the selected icons; if nothing is selected (or the selection contains no `icon` nodes), all icons in the `Icons` frame are exported as usual
 
 **Export Colors Assets**
 
@@ -59,6 +60,7 @@ Exports icons in XML/PNG format with support for:
 - Multiple densities (mdpi, hdpi, xhdpi, xxhdpi, xxxhdpi)
 - Light and dark themes (via resource qualifiers)
 - RTL support
+- **Partial export:** select one or more `icon` nodes on the page before running the export to export only the selected icons; if nothing is selected (or the selection contains no `icon` nodes), all icons in the `Icons` frame are exported as usual
 
 **Export Colors Assets**
 
