@@ -179,152 +179,137 @@ export function svgToVectorDrawable(svgString: string, options: {
 
   const paths = [];
 
-  // Extract all path elements
-  const pathRegex = /<path[^>]*d=["']([^"']*)["'][^>]*>/g;
+  // Process all supported elements in document order
+  const elementRegex = /<(path|rect|circle|ellipse)\b[^>]*\/?>/g;
   let match;
 
-  while ((match = pathRegex.exec(svgString)) !== null) {
-    const pathData = match[1];
-    const fullPathElement = match[0];
-
-    // Extract attributes for this path
-    const fillMatch = fullPathElement.match(/fill=["']([^"']*)["']/);
-    const fill = fillMatch ? normalizeColor(fillMatch[1]) : "#000000";
-
-    const strokeMatch = fullPathElement.match(/stroke=["']([^"']*)["']/);
-    const stroke = strokeMatch ? normalizeColor(strokeMatch[1]) : null;
-
-    const strokeWidthMatch = fullPathElement.match(/stroke-width=["']([^"']*)["']/);
-    const strokeWidth = strokeWidthMatch ? strokeWidthMatch[1] : null;
-
-    const opacityMatch = fullPathElement.match(/opacity=["']([^"']*)["']/);
-    const opacity = opacityMatch ? opacityMatch[1] : "1";
-
-    paths.push({
-      pathData,
-      fill: fill !== "none" ? fill : null,
-      stroke,
-      strokeWidth,
-      opacity: opacity !== "1" ? opacity : null
-    });
-  }
-
-  // Extract circle elements and convert to paths
-  const circleRegex = /<circle[^>]*\/?>/g;
-  while ((match = circleRegex.exec(svgString)) !== null) {
+  while ((match = elementRegex.exec(svgString)) !== null) {
+    const tagName = match[1];
     const fullElement = match[0];
-    let cx = parseFloat(extractAttribute(fullElement, 'cx') || '0');
-    let cy = parseFloat(extractAttribute(fullElement, 'cy') || '0');
-    const r = parseFloat(extractAttribute(fullElement, 'r') || '0');
 
-    // Apply transform if present (translate only for circles)
-    const transform = extractAttribute(fullElement, 'transform');
-    const matrix = parseTransform(transform);
-    const transformed = applyTransform(cx, cy, matrix);
-    cx = transformed.x;
-    cy = transformed.y;
+    if (tagName === 'path') {
+      const dMatch = fullElement.match(/\bd=["']([^"']*)["']/);
+      if (!dMatch) continue;
+      const pathData = dMatch[1];
 
-    if (r > 0) {
-      const pathData = circleToPath(cx, cy, r);
-      const fill = extractAttribute(fullElement, 'fill');
+      const fillAttr = extractAttribute(fullElement, 'fill');
+      const fill = fillAttr ? normalizeColor(fillAttr) : "#000000";
       const stroke = extractAttribute(fullElement, 'stroke');
       const strokeWidth = extractAttribute(fullElement, 'stroke-width');
-      const opacity = extractAttribute(fullElement, 'opacity');
+      const opacity = extractAttribute(fullElement, 'opacity') || extractAttribute(fullElement, 'fill-opacity');
+      const fillRule = extractAttribute(fullElement, 'fill-rule');
 
       paths.push({
         pathData,
-        fill: fill && fill !== "none" ? normalizeColor(fill) : "#000000",
+        fill: fill !== "none" ? fill : null,
         stroke: stroke ? normalizeColor(stroke) : null,
         strokeWidth,
-        opacity: opacity && opacity !== "1" ? opacity : null
+        opacity: opacity && opacity !== "1" ? opacity : null,
+        fillType: fillRule === 'evenodd' ? 'evenOdd' : null
       });
-    }
-  }
 
-  // Extract ellipse elements and convert to paths
-  const ellipseRegex = /<ellipse[^>]*\/?>/g;
-  while ((match = ellipseRegex.exec(svgString)) !== null) {
-    const fullElement = match[0];
-    let cx = parseFloat(extractAttribute(fullElement, 'cx') || '0');
-    let cy = parseFloat(extractAttribute(fullElement, 'cy') || '0');
-    const rx = parseFloat(extractAttribute(fullElement, 'rx') || '0');
-    const ry = parseFloat(extractAttribute(fullElement, 'ry') || '0');
+    } else if (tagName === 'circle') {
+      let cx = parseFloat(extractAttribute(fullElement, 'cx') || '0');
+      let cy = parseFloat(extractAttribute(fullElement, 'cy') || '0');
+      const r = parseFloat(extractAttribute(fullElement, 'r') || '0');
 
-    // Apply transform if present (translate only for ellipses)
-    const transform = extractAttribute(fullElement, 'transform');
-    const matrix = parseTransform(transform);
-    const transformed = applyTransform(cx, cy, matrix);
-    cx = transformed.x;
-    cy = transformed.y;
-
-    if (rx > 0 && ry > 0) {
-      const pathData = ellipseToPath(cx, cy, rx, ry);
-      const fill = extractAttribute(fullElement, 'fill');
-      const stroke = extractAttribute(fullElement, 'stroke');
-      const strokeWidth = extractAttribute(fullElement, 'stroke-width');
-      const opacity = extractAttribute(fullElement, 'opacity');
-
-      paths.push({
-        pathData,
-        fill: fill && fill !== "none" ? normalizeColor(fill) : "#000000",
-        stroke: stroke ? normalizeColor(stroke) : null,
-        strokeWidth,
-        opacity: opacity && opacity !== "1" ? opacity : null
-      });
-    }
-  }
-
-  // Extract rect elements and convert to paths
-  const rectRegex = /<rect[^>]*\/?>/g;
-  while ((match = rectRegex.exec(svgString)) !== null) {
-    const fullElement = match[0];
-    const x = parseFloat(extractAttribute(fullElement, 'x') || '0');
-    const y = parseFloat(extractAttribute(fullElement, 'y') || '0');
-    const rectWidth = parseFloat(extractAttribute(fullElement, 'width') || '0');
-    const rectHeight = parseFloat(extractAttribute(fullElement, 'height') || '0');
-    const rx = extractAttribute(fullElement, 'rx');
-    const ry = extractAttribute(fullElement, 'ry');
-
-    if (rectWidth > 0 && rectHeight > 0) {
-      let pathData: string;
-
-      // Apply transform if present
       const transform = extractAttribute(fullElement, 'transform');
       const matrix = parseTransform(transform);
+      const transformed = applyTransform(cx, cy, matrix);
+      cx = transformed.x;
+      cy = transformed.y;
 
-      // Check if transform is identity (no transformation)
-      const isIdentity = matrix.a === 1 && matrix.b === 0 && matrix.c === 0 && matrix.d === 1 && matrix.e === 0 && matrix.f === 0;
+      if (r > 0) {
+        const pathData = circleToPath(cx, cy, r);
+        const fill = extractAttribute(fullElement, 'fill');
+        const stroke = extractAttribute(fullElement, 'stroke');
+        const strokeWidth = extractAttribute(fullElement, 'stroke-width');
+        const opacity = extractAttribute(fullElement, 'opacity');
 
-      if (isIdentity) {
-        // No transformation, use simple rect path
-        pathData = rectToPath(
-          x, y, rectWidth, rectHeight,
-          rx ? parseFloat(rx) : undefined,
-          ry ? parseFloat(ry) : undefined
-        );
-      } else {
-        // Apply transformation to all four corners
-        const topLeft = applyTransform(x, y, matrix);
-        const topRight = applyTransform(x + rectWidth, y, matrix);
-        const bottomRight = applyTransform(x + rectWidth, y + rectHeight, matrix);
-        const bottomLeft = applyTransform(x, y + rectHeight, matrix);
-
-        // Create path through transformed corners (ignore rounded corners for transformed rects)
-        pathData = `M ${topLeft.x},${topLeft.y} L ${topRight.x},${topRight.y} L ${bottomRight.x},${bottomRight.y} L ${bottomLeft.x},${bottomLeft.y} Z`;
+        paths.push({
+          pathData,
+          fill: fill && fill !== "none" ? normalizeColor(fill) : "#000000",
+          stroke: stroke ? normalizeColor(stroke) : null,
+          strokeWidth,
+          opacity: opacity && opacity !== "1" ? opacity : null,
+          fillType: null
+        });
       }
 
-      const fill = extractAttribute(fullElement, 'fill');
-      const stroke = extractAttribute(fullElement, 'stroke');
-      const strokeWidth = extractAttribute(fullElement, 'stroke-width');
-      const opacity = extractAttribute(fullElement, 'opacity');
+    } else if (tagName === 'ellipse') {
+      let cx = parseFloat(extractAttribute(fullElement, 'cx') || '0');
+      let cy = parseFloat(extractAttribute(fullElement, 'cy') || '0');
+      const rx = parseFloat(extractAttribute(fullElement, 'rx') || '0');
+      const ry = parseFloat(extractAttribute(fullElement, 'ry') || '0');
 
-      paths.push({
-        pathData,
-        fill: fill && fill !== "none" ? normalizeColor(fill) : "#000000",
-        stroke: stroke ? normalizeColor(stroke) : null,
-        strokeWidth,
-        opacity: opacity && opacity !== "1" ? opacity : null
-      });
+      const transform = extractAttribute(fullElement, 'transform');
+      const matrix = parseTransform(transform);
+      const transformed = applyTransform(cx, cy, matrix);
+      cx = transformed.x;
+      cy = transformed.y;
+
+      if (rx > 0 && ry > 0) {
+        const pathData = ellipseToPath(cx, cy, rx, ry);
+        const fill = extractAttribute(fullElement, 'fill');
+        const stroke = extractAttribute(fullElement, 'stroke');
+        const strokeWidth = extractAttribute(fullElement, 'stroke-width');
+        const opacity = extractAttribute(fullElement, 'opacity');
+
+        paths.push({
+          pathData,
+          fill: fill && fill !== "none" ? normalizeColor(fill) : "#000000",
+          stroke: stroke ? normalizeColor(stroke) : null,
+          strokeWidth,
+          opacity: opacity && opacity !== "1" ? opacity : null,
+          fillType: null
+        });
+      }
+
+    } else if (tagName === 'rect') {
+      const x = parseFloat(extractAttribute(fullElement, 'x') || '0');
+      const y = parseFloat(extractAttribute(fullElement, 'y') || '0');
+      const rectWidth = parseFloat(extractAttribute(fullElement, 'width') || '0');
+      const rectHeight = parseFloat(extractAttribute(fullElement, 'height') || '0');
+      const rx = extractAttribute(fullElement, 'rx');
+      const ry = extractAttribute(fullElement, 'ry');
+
+      if (rectWidth > 0 && rectHeight > 0) {
+        let pathData: string;
+
+        const transform = extractAttribute(fullElement, 'transform');
+        const matrix = parseTransform(transform);
+
+        const isIdentity = matrix.a === 1 && matrix.b === 0 && matrix.c === 0 && matrix.d === 1 && matrix.e === 0 && matrix.f === 0;
+
+        if (isIdentity) {
+          pathData = rectToPath(
+            x, y, rectWidth, rectHeight,
+            rx ? parseFloat(rx) : undefined,
+            ry ? parseFloat(ry) : undefined
+          );
+        } else {
+          const topLeft = applyTransform(x, y, matrix);
+          const topRight = applyTransform(x + rectWidth, y, matrix);
+          const bottomRight = applyTransform(x + rectWidth, y + rectHeight, matrix);
+          const bottomLeft = applyTransform(x, y + rectHeight, matrix);
+
+          pathData = `M ${topLeft.x},${topLeft.y} L ${topRight.x},${topRight.y} L ${bottomRight.x},${bottomRight.y} L ${bottomLeft.x},${bottomLeft.y} Z`;
+        }
+
+        const fill = extractAttribute(fullElement, 'fill');
+        const stroke = extractAttribute(fullElement, 'stroke');
+        const strokeWidth = extractAttribute(fullElement, 'stroke-width');
+        const opacity = extractAttribute(fullElement, 'opacity');
+
+        paths.push({
+          pathData,
+          fill: fill && fill !== "none" ? normalizeColor(fill) : "#000000",
+          stroke: stroke ? normalizeColor(stroke) : null,
+          strokeWidth,
+          opacity: opacity && opacity !== "1" ? opacity : null,
+          fillType: null
+        });
+      }
     }
   }
 
@@ -344,7 +329,11 @@ export function svgToVectorDrawable(svgString: string, options: {
     if (path.fill) {
       vectorDrawable += `        android:fillColor="${path.fill}"\n`;
     }
-    
+
+    if (path.fillType) {
+      vectorDrawable += `        android:fillType="${path.fillType}"\n`;
+    }
+
     if (path.stroke) {
       vectorDrawable += `        android:strokeColor="${path.stroke}"\n`;
     }
